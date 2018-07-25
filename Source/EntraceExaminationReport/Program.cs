@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TomasKubes.EntraceExaminationReport.Reports;
 using TomasKubes.EntraceExaminationReport.Serialization;
 
 namespace TomasKubes.EntraceExaminationReport
@@ -33,19 +34,30 @@ namespace TomasKubes.EntraceExaminationReport
             CorruptedInputWarning[] parseWarnigns = set.Deserialize(opts.InputFileName)
                 .ToArray();
 
-            ReportCorruptedRecords(parseWarnigns, opts);
+            IReportSerializer serializer = GetSerializer(opts.ReportFormat);
 
-            set.MakeReports(opts.OutputDirectory, opts.ReportFormat);
+            ReportCorruptedRecords(serializer, parseWarnigns, opts);
+
+            MakeReports(serializer, opts.OutputDirectory, set, opts);
         }
 
-        private static void ReportCorruptedRecords(CorruptedInputWarning[] parseWarnigns, CommandOptions opts)
+        private static void MakeReports(IReportSerializer serializer, string outputDirectory, ExaminationSet set, CommandOptions opts)
+        {
+            string path = Path.Combine(opts.OutputDirectory, opts.StudentReportFileName + "." + opts.ReportFormat);
+
+            StudentReport studentReport = new StudentReport();
+            studentReport.Compute(set);
+            serializer.Serialize(path, studentReport);            
+        }
+
+        private static void ReportCorruptedRecords(IReportSerializer serializer, CorruptedInputWarning[] parseWarnigns, CommandOptions opts)
         {
             if (parseWarnigns.Length == 0)
                 return;
 
             string path = Path.Combine(opts.OutputDirectory, opts.CorruptedReportFileName + "." +  opts.ReportFormat);
 
-            IReportSerializer serializer = GetSerializer(opts.ReportFormat);
+           
             serializer.Serialize(path, parseWarnigns);
         }
 

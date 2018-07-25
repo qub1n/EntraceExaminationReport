@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TomasKubes.EntraceExaminationReport.Serialization;
 
 namespace TomasKubes.EntraceExaminationReport
 {
@@ -121,11 +122,6 @@ namespace TomasKubes.EntraceExaminationReport
         private void Add(StudentsGroup group, Examination exam)
         {
             GetGroup(group).Add(exam);
-        }
-
-        internal void MakeReports(string directoryOutput, ReportFormat format)
-        {
-            throw new NotImplementedException();
-        }
+        }       
     }
 }

@@ -21,5 +21,8 @@ namespace TomasKubes.EntraceExaminationReport
 
         [Option('c', "CorruptedReportFileName", Required = false, Default = "corrupted", HelpText = "Name of file for recording corrupted input without extension.")]
         public string CorruptedReportFileName { get; set; }
+
+        [Option('s', "StudentReportFileName", Required = false, Default = "students", HelpText = "Name of report file with content: For each student count average using the following weights: Math 40%, Physics 35%, English 25%.")]
+        public string StudentReportFileName { get; set; }
     }
 }
