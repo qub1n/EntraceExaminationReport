@@ -90,6 +90,7 @@
     <Compile Include="Reports\Modus.cs" />
     <Compile Include="Reports\StudentReport.cs" />
     <Compile Include="Reports\SubjectReport.cs" />
+    <Compile Include="Reports\SubjectStudenGroup.cs" />
     <Compile Include="Serialization\IReportSerializer.cs" />
     <Compile Include="Serialization\JSonReportSerializer.cs" />
     <Compile Include="Serialization\XmlReportSerializer.cs" />

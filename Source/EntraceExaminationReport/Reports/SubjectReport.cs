@@ -5,26 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TomasKubes.EntraceExaminationReport.Reports
-{
-    public class SubjectStudenGroup
-    {
-        public Subject Subject { get; set; }
-        public StudentsGroup StudentsGroup { get; set; }
-
-        public override int GetHashCode()
-        {
-            return (int)Subject + ((int)StudentsGroup << 16);
-        }
-
-        public override bool Equals(object obj)
-        {
-            SubjectStudenGroup ssg = obj as SubjectStudenGroup;
-            if (ssg == null)
-                return false;
-            return Subject == ssg.Subject && Subject == ssg.Subject;
-        }
-    }
-
+{    
     public class SubjectReportItem
     {
         public Subject Subject { get; set; }
@@ -38,7 +19,7 @@ namespace TomasKubes.EntraceExaminationReport.Reports
     {
         public List<SubjectReportItem> Collection = new List<SubjectReportItem>();
 
-        internal void Compute(ExaminationSet set)
+        public void Compute(ExaminationSet set)
         {
             Collection.Clear();
             Subject[] subjects = (Subject[])Enum.GetValues(typeof(Subject));
@@ -48,18 +29,24 @@ namespace TomasKubes.EntraceExaminationReport.Reports
             Dictionary<SubjectStudenGroup, Median> median = new Dictionary<SubjectStudenGroup, Median>();
             Dictionary<SubjectStudenGroup, Modus> modus = new Dictionary<SubjectStudenGroup, Modus>();
 
+            // preparation empty collections
             foreach (Subject subject in subjects)
             {
                 foreach (StudentsGroup group in groups)
                 {
-                    SubjectStudenGroup ssg = new SubjectStudenGroup(){StudentsGroup = group, Subject = subject,};
-
+                    SubjectStudenGroup ssg = new SubjectStudenGroup() { StudentsGroup = group, Subject = subject, };
                     average.Add(ssg, new Average());
                     median.Add(ssg, new Median());
                     modus.Add(ssg, new Modus());
                 }
             }
 
+            ComputeSubjectReport(set, groups, average, median, modus);
+            CollectResults(subjects, groups, average, median, modus);
+        }
+
+        private static void ComputeSubjectReport(ExaminationSet set, StudentsGroup[] groups, Dictionary<SubjectStudenGroup, Average> average, Dictionary<SubjectStudenGroup, Median> median, Dictionary<SubjectStudenGroup, Modus> modus)
+        {
             foreach (StudentsGroup group in groups)
             {
                 foreach (Examination exam in set.GetGroup(group))
@@ -74,7 +61,10 @@ namespace TomasKubes.EntraceExaminationReport.Reports
                     }
                 }
             }
+        }
 
+        private void CollectResults(Subject[] subjects, StudentsGroup[] groups, Dictionary<SubjectStudenGroup, Average> average, Dictionary<SubjectStudenGroup, Median> median, Dictionary<SubjectStudenGroup, Modus> modus)
+        {
             foreach (Subject subject in subjects)
             {
                 foreach (StudentsGroup group in groups)
@@ -87,10 +77,10 @@ namespace TomasKubes.EntraceExaminationReport.Reports
                         MedianResult = median[ssg].Value(),
                         ModusResult = modus[ssg].Value(),
                         Subject = ssg.Subject,
-                        StudentsGroup =ssg.StudentsGroup,
+                        StudentsGroup = ssg.StudentsGroup,
                     };
                     Collection.Add(reportItem);
-                }            
+                }
             }
         }
     }
