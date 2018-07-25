@@ -10,13 +10,15 @@ namespace TomasKubes.EntraceExaminationReport.Reports
     {
         int[] _countPervalue = new int[100];
 
-        internal void Add(int value)
+        public void Add(int value)
         {
             _countPervalue[value]++;
         }
 
-        internal int Value()
+        public int Value()
         {
+            //pokud nema modus zadna data vraci 0
+
             int max = -1;
             int maxIndex = 0;
             for (int i = 0; i < _countPervalue.Length; i++)
