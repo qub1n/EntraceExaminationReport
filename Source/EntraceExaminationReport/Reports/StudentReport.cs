@@ -18,6 +18,8 @@ namespace TomasKubes.EntraceExaminationReport.Reports
 
         public void Compute(ExaminationSet set)
         {
+            Collection.Clear();
+
             foreach (StudentsGroup studentsGroup in Enum.GetValues(typeof(StudentsGroup)))
             {
                 foreach (Examination exam in set.GetGroup(studentsGroup))

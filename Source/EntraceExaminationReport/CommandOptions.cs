@@ -24,5 +24,8 @@ namespace TomasKubes.EntraceExaminationReport
 
         [Option('s', "StudentReportFileName", Required = false, Default = "students", HelpText = "Name of report file with content: For each student count average using the following weights: Math 40%, Physics 35%, English 25%.")]
         public string StudentReportFileName { get; set; }
+
+        [Option('b', "SubjectReportFileName", Required = false, Default = "subject", HelpText = "For each subject, the application must count simple average, median and modus for all data records and also separately for each group.")]
+        public string SubjectReportFileName { get; set; }
     }
 }

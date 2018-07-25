@@ -85,6 +85,9 @@
     <Compile Include="ExaminationSet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports\Average.cs" />
+    <Compile Include="Reports\Median.cs" />
+    <Compile Include="Reports\Modus.cs" />
     <Compile Include="Reports\StudentReport.cs" />
     <Compile Include="Reports\SubjectReport.cs" />
     <Compile Include="Serialization\IReportSerializer.cs" />

@@ -43,11 +43,17 @@ namespace TomasKubes.EntraceExaminationReport
 
         private static void MakeReports(IReportSerializer serializer, string outputDirectory, ExaminationSet set, CommandOptions opts)
         {
-            string path = Path.Combine(opts.OutputDirectory, opts.StudentReportFileName + "." + opts.ReportFormat);
+            string pathStudentReport = Path.Combine(opts.OutputDirectory, opts.StudentReportFileName + "." + opts.ReportFormat);
 
             StudentReport studentReport = new StudentReport();
             studentReport.Compute(set);
-            serializer.Serialize(path, studentReport);            
+            serializer.Serialize(pathStudentReport, studentReport);
+
+            string pathSubjectReport = Path.Combine(opts.OutputDirectory, opts.SubjectReportFileName + "." + opts.ReportFormat);
+
+            SubjectReport subjectReport = new SubjectReport();
+            subjectReport.Compute(set);
+            serializer.Serialize(pathSubjectReport, subjectReport);
         }
 
         private static void ReportCorruptedRecords(IReportSerializer serializer, CorruptedInputWarning[] parseWarnigns, CommandOptions opts)
