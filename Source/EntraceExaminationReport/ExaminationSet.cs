@@ -18,10 +18,16 @@ namespace TomasKubes.EntraceExaminationReport
             return Deserialize(lines);
         }
 
-        public IEnumerable<CorruptedInputWarning> Deserialize(string[] lines)
+        public IEnumerable<CorruptedInputWarning> CheckHeader(string[] lines)
         {
-            //stav stavove automatu na parsovani souboru
-            StudentsGroup? currentGroup = null;
+            if (lines.Length == 0)
+            {
+                yield return new CorruptedInputWarning()
+                {
+                    Message = $"File is empty",
+                    LineNumber = 0,
+                };
+            }
 
             int lineAfterTitle = 1;
             if (lines.Length > lineAfterTitle && !string.IsNullOrWhiteSpace(lines[lineAfterTitle]))
@@ -32,6 +38,14 @@ namespace TomasKubes.EntraceExaminationReport
                     LineNumber = lineAfterTitle,
                 };
             }
+        }
+        public IEnumerable<CorruptedInputWarning> Deserialize(string[] lines)
+        {
+            foreach (var headerWarning in CheckHeader(lines))
+                yield return headerWarning;
+
+            //state of the state automat for parsing file
+            StudentsGroup ? currentGroup = null;
 
             for (int i = 1; i < lines.Length; i++) //first line is skipped
             {
@@ -67,7 +81,7 @@ namespace TomasKubes.EntraceExaminationReport
                     if (warning != null)
                         yield return warning;
                 }
-            }          
+            }
         }
 
         private CorruptedInputWarning ParseLine(StudentsGroup group, string line)
