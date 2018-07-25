@@ -32,7 +32,7 @@ namespace TomasKubes.EntraceExaminationReport
                     Subject subject = (Subject)Enum.Parse(typeof(Subject), keyValue[0]);
                     int result = int.Parse(keyValue[1]);
                     if (result < 0 || result > 100)
-                        throw new ArgumentOutOfRangeException($"Expected result {result} is out of range 0-100");
+                        throw new ArgumentOutOfRangeException($"Expected result {result} for subject {subject} is out of range 0-100");
                     if( Results.ContainsKey(subject))
                         throw new ArgumentOutOfRangeException($"Result from subject {subject} is duplicated.");
 

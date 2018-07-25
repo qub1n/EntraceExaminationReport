@@ -58,34 +58,6 @@ namespace TomasKubes.EntranceExaminationReport.Test
         }
 
         [TestMethod]
-        [Description("Test that one exam result is correctly parsed.")]
-        public void TestParseOneExam()
-        {
-            ExaminationSet set = new ExaminationSet();
-            var lines = new string[]
-           {
-                "Entrance examination",
-                "",
-                "Group1",
-                "Alba Hopper;Math=60;Physics=38;English=65"
-           };
-            var warnigns = set.Deserialize(lines).ToArray();
-            Assert.AreEqual(0, warnigns.Length);
-
-            Assert.AreEqual(1, set.GetGroup(StudentsGroup.Group1).Count);
-            Assert.AreEqual(0, set.GetGroup(StudentsGroup.Group2).Count);
-            Assert.AreEqual(0, set.GetGroup(StudentsGroup.Group3).Count);
-
-            var list = set.GetGroup(StudentsGroup.Group1);
-            var exam = list.Single();
-
-            Assert.AreEqual("Alba Hopper", exam.Name);
-            Assert.AreEqual(60, exam.Results[Subject.Math]);
-            Assert.AreEqual(38, exam.Results[Subject.Physics]);
-            Assert.AreEqual(65, exam.Results[Subject.English]);
-        }
-
-        [TestMethod]
         [Description("Test that user is warned if subject is duplicated.")]
         public void TestDuplicateSubject()
         {
@@ -131,6 +103,97 @@ namespace TomasKubes.EntranceExaminationReport.Test
            };
             var warnigns = set.Deserialize(lines).ToArray();
             AssertSingleMessage(warnigns, 3, "german");
+        }
+
+        [TestMethod]
+        [Description("Test that one exam result is correctly parsed.")]
+        public void TestParseOneExam()
+        {
+            ExaminationSet set = new ExaminationSet();
+            var lines = new string[]
+           {
+                "Entrance examination",
+                "",
+                "Group1",
+                "Alba Hopper;Math=60;Physics=38;English=65"
+           };
+            var warnigns = set.Deserialize(lines).ToArray();
+            Assert.AreEqual(0, warnigns.Length);
+
+            Assert.AreEqual(1, set.GetGroup(StudentsGroup.Group1).Count);
+            Assert.AreEqual(0, set.GetGroup(StudentsGroup.Group2).Count);
+            Assert.AreEqual(0, set.GetGroup(StudentsGroup.Group3).Count);
+
+            var list = set.GetGroup(StudentsGroup.Group1);
+            var exam = list.Single();
+
+            Assert.AreEqual("Alba Hopper", exam.Name);
+            Assert.AreEqual(60, exam.Results[Subject.Math]);
+            Assert.AreEqual(38, exam.Results[Subject.Physics]);
+            Assert.AreEqual(65, exam.Results[Subject.English]);
+        }
+
+        [TestMethod]
+        [Description("Test that parsing failed with appropriate message if result is out of range.")]
+        public void TestResultOver100()
+        {
+            ExaminationSet set = new ExaminationSet();
+            var lines = new string[]
+           {
+                "Entrance examination",
+                "",
+                "Group1",
+                "Alba Hopper;Math=101;Physics=38;English=65"
+           };
+            var warnigns = set.Deserialize(lines).ToArray();
+            AssertSingleMessage(warnigns, 3, "math");
+        }
+
+        [TestMethod]
+        [Description("Test that one exam result is correctly parsed.")]
+        public void TestParseMultipleGroups()
+        {
+            ExaminationSet set = new ExaminationSet();
+            var lines = new string[]
+           {
+                "Entrance examination",
+                "",
+                "Group1",
+                "Alba Hopper;Math=60;Physics=38;English=65",
+                "Harrison Perez;Math=25;Physics=13;English=40",
+                "",
+                "Group2",
+                "Celeste Blake; Math = 98; Physics = 45; English = 92",
+                "Kristy Mendez; Math = 65; Physics = 50; English = 78",
+                "Cheyenne Almond;Math=87;Physics=34;English=45",
+                "",
+                "Group3",
+                "Hettie Durham;Math=74;Physics=55;English=46",
+           };
+            var warnigns = set.Deserialize(lines).ToArray();
+            Assert.AreEqual(0, warnigns.Length);
+
+            Assert.AreEqual(2, set.GetGroup(StudentsGroup.Group1).Count);
+            Assert.AreEqual(3, set.GetGroup(StudentsGroup.Group2).Count);
+            Assert.AreEqual(1, set.GetGroup(StudentsGroup.Group3).Count);
+
+            var harrison = set.GetGroup(StudentsGroup.Group1)[1];            
+            Assert.AreEqual("Harrison Perez", harrison.Name);
+            Assert.AreEqual(25, harrison.Results[Subject.Math]);
+            Assert.AreEqual(13, harrison.Results[Subject.Physics]);
+            Assert.AreEqual(40, harrison.Results[Subject.English]);
+
+            var cheyenne = set.GetGroup(StudentsGroup.Group2)[2];
+            Assert.AreEqual("Cheyenne Almond", cheyenne.Name);
+            Assert.AreEqual(87, cheyenne.Results[Subject.Math]);
+            Assert.AreEqual(34, cheyenne.Results[Subject.Physics]);
+            Assert.AreEqual(45, cheyenne.Results[Subject.English]);
+
+            var durham = set.GetGroup(StudentsGroup.Group3)[0];
+            Assert.AreEqual("Hettie Durham", durham.Name);
+            Assert.AreEqual(74, durham.Results[Subject.Math]);
+            Assert.AreEqual(55, durham.Results[Subject.Physics]);
+            Assert.AreEqual(46, durham.Results[Subject.English]);
         }
     }
 }
