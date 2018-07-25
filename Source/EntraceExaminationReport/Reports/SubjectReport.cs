@@ -6,9 +6,29 @@ using System.Threading.Tasks;
 
 namespace TomasKubes.EntraceExaminationReport.Reports
 {
+    public class SubjectStudenGroup
+    {
+        public Subject Subject { get; set; }
+        public StudentsGroup StudentsGroup { get; set; }
+
+        public override int GetHashCode()
+        {
+            return (int)Subject + ((int)StudentsGroup << 16);
+        }
+
+        public override bool Equals(object obj)
+        {
+            SubjectStudenGroup ssg = obj as SubjectStudenGroup;
+            if (ssg == null)
+                return false;
+            return Subject == ssg.Subject && Subject == ssg.Subject;
+        }
+    }
+
     public class SubjectReportItem
     {
         public Subject Subject { get; set; }
+        public StudentsGroup StudentsGroup { get; set; }
         public double AverageResult { get; set; }
         public double MedianResult { get; set; }
         public int ModusResult { get; set; }
@@ -22,40 +42,55 @@ namespace TomasKubes.EntraceExaminationReport.Reports
         {
             Collection.Clear();
             Subject[] subjects = (Subject[])Enum.GetValues(typeof(Subject));
+            StudentsGroup[] groups = (StudentsGroup[])Enum.GetValues(typeof(StudentsGroup));
 
-            Dictionary<Subject, Average> average = new Dictionary<Subject, Average>();
-            Dictionary<Subject, Median> median = new Dictionary<Subject, Median>();
-            Dictionary<Subject, Modus> modus = new Dictionary<Subject, Modus>();
+            Dictionary<SubjectStudenGroup, Average> average = new Dictionary<SubjectStudenGroup, Average>();
+            Dictionary<SubjectStudenGroup, Median> median = new Dictionary<SubjectStudenGroup, Median>();
+            Dictionary<SubjectStudenGroup, Modus> modus = new Dictionary<SubjectStudenGroup, Modus>();
 
             foreach (Subject subject in subjects)
             {
-                average.Add(subject, new Average());
-                median.Add(subject, new Median());
-                modus.Add(subject, new Modus());
+                foreach (StudentsGroup group in groups)
+                {
+                    SubjectStudenGroup ssg = new SubjectStudenGroup(){StudentsGroup = group, Subject = subject,};
+
+                    average.Add(ssg, new Average());
+                    median.Add(ssg, new Median());
+                    modus.Add(ssg, new Modus());
+                }
             }
 
-            foreach (StudentsGroup studentsGroup in Enum.GetValues(typeof(StudentsGroup)))
+            foreach (StudentsGroup group in groups)
             {
-                foreach (Examination exam in set.GetGroup(studentsGroup))
+                foreach (Examination exam in set.GetGroup(group))
                 {
                     foreach (var subjectResult in exam.Results)
                     {
-                        average[subjectResult.Key].Add(subjectResult.Value);
-                        median[subjectResult.Key].Add(subjectResult.Value);
-                        modus[subjectResult.Key].Add(subjectResult.Value);
+                        SubjectStudenGroup ssg = new SubjectStudenGroup() { StudentsGroup = group, Subject = subjectResult.Key, };
+
+                        average[ssg].Add(subjectResult.Value);
+                        median[ssg].Add(subjectResult.Value);
+                        modus[ssg].Add(subjectResult.Value);
                     }
                 }
             }
 
             foreach (Subject subject in subjects)
-            {                
-                SubjectReportItem reportItem = new SubjectReportItem()
+            {
+                foreach (StudentsGroup group in groups)
                 {
-                    AverageResult = average[subject].Value(),
-                    MedianResult = median[subject].Value(),
-                    ModusResult = modus[subject].Value(),
-                };
-                Collection.Add(reportItem);
+                    SubjectStudenGroup ssg = new SubjectStudenGroup() { StudentsGroup = group, Subject = subject, };
+
+                    SubjectReportItem reportItem = new SubjectReportItem()
+                    {
+                        AverageResult = average[ssg].Value(),
+                        MedianResult = median[ssg].Value(),
+                        ModusResult = modus[ssg].Value(),
+                        Subject = ssg.Subject,
+                        StudentsGroup =ssg.StudentsGroup,
+                    };
+                    Collection.Add(reportItem);
+                }            
             }
         }
     }
