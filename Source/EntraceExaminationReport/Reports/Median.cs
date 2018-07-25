@@ -23,7 +23,7 @@ namespace TomasKubes.EntraceExaminationReport.Reports
             _list.Sort();
 
             if (_list.Count % 2 == 1)
-                return _list[_list.Count];
+                return _list[_list.Count/ 2];
             else
             {
                 int half = _list.Count / 2;
