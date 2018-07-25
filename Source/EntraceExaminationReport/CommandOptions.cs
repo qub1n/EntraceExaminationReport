@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EntraceExaminationReport
+namespace TomasKubes.EntraceExaminationReport
 {
 
     public class CommandOptions
