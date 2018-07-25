@@ -15,13 +15,23 @@ namespace TomasKubes.EntraceExaminationReport
         {
             var lines = File.ReadAllLines(path, Encoding.ASCII);
 
-            return ProcessLines(lines);
+            return Deserialize(lines);
         }
 
-        private IEnumerable<CorruptedInputWarning> ProcessLines(string[] lines)
+        public IEnumerable<CorruptedInputWarning> Deserialize(string[] lines)
         {
             //stav stavove automatu na parsovani souboru
             StudentsGroup? currentGroup = null;
+
+            int lineAfterTitle = 1;
+            if (lines.Length > lineAfterTitle && !string.IsNullOrWhiteSpace(lines[lineAfterTitle]))
+            {
+                yield return new CorruptedInputWarning()
+                {
+                    Message = $"There is no space after title",
+                    LineNumber = lineAfterTitle,
+                };
+            }
 
             for (int i = 1; i < lines.Length; i++) //first line is skipped
             {
