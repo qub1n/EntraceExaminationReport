@@ -29,7 +29,8 @@ namespace EntraceExaminationReport
         private static void RunOptionsAndReturnExitCode(CommandOptions opts)
         {
             ExaminationSet set = new ExaminationSet();
-            set.Deserialize(opts.InputFileName);
+            var parseWarnigns = set.Deserialize(opts.InputFileName)
+                .ToArray();
 
             set.MakeReports(opts.OutputDirectory, opts.ReportFormat);
         }

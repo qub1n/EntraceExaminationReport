@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandOptions.cs" />
+    <Compile Include="CorruptedInputWarning.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Examination.cs" />
     <Compile Include="ExaminationSet.cs" />

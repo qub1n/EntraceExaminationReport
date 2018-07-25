@@ -11,5 +11,10 @@ namespace EntraceExaminationReport
         public string Name { get; set; }
 
         public Dictionary<Subject, int> Results = new Dictionary<Subject, int>();
+
+        public CorruptedInputWarning Deserialize(string line)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
