@@ -82,6 +82,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Examination.cs" />
     <Compile Include="ExaminationSet.cs" />
+    <Compile Include="ParseException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

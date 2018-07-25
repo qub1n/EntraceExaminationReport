@@ -11,6 +11,19 @@ namespace TomasKubes.EntraceExaminationReport
     {
         Dictionary<StudentsGroup, List<Examination>> _set = new Dictionary<StudentsGroup, List<Examination>>();
 
+        public ExaminationSet()
+        {
+            foreach (StudentsGroup group in Enum.GetValues(typeof(StudentsGroup)))
+            {
+                _set.Add(group, new List<Examination>());
+            }
+        }
+
+        public List<Examination> GetGroup(StudentsGroup group)
+        {
+            return _set[group];
+        }
+
         public IEnumerable<CorruptedInputWarning> Deserialize(string path)
         {
             var lines = File.ReadAllLines(path, Encoding.ASCII);
@@ -45,7 +58,7 @@ namespace TomasKubes.EntraceExaminationReport
                 yield return headerWarning;
 
             //state of the state automat for parsing file
-            StudentsGroup ? currentGroup = null;
+            StudentsGroup? currentGroup = null;
 
             for (int i = 1; i < lines.Length; i++) //first line is skipped
             {
@@ -77,27 +90,37 @@ namespace TomasKubes.EntraceExaminationReport
                 }
                 else
                 {
-                    CorruptedInputWarning warning = ParseLine(currentGroup.Value, trimmedLine);
-                    if (warning != null)
-                        yield return warning;
+                    Exception lastException = null;
+                    try
+                    {
+                        ParseLine(currentGroup.Value, trimmedLine);
+                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        lastException = ex;                        
+                    };
+
+                    yield return new CorruptedInputWarning()
+                    {
+                        LineNumber = i,
+                        Message = lastException.Message,
+                    };
                 }
             }
         }
 
-        private CorruptedInputWarning ParseLine(StudentsGroup group, string line)
+
+        private void ParseLine(StudentsGroup group, string line)
         {
             Examination exam = new Examination();
-            CorruptedInputWarning warning = exam.Deserialize(line);
-            if (warning != null)
-                return warning;
-
+            exam.Deserialize(line);
             Add(group, exam);
-            return null;
         }
 
         private void Add(StudentsGroup group, Examination exam)
         {
-            throw new NotImplementedException();
+            GetGroup(group).Add(exam);
         }
 
         internal void MakeReports(string directoryOutput, ReportFormat format)
