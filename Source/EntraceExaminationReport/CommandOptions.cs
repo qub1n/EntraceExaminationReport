@@ -17,6 +17,9 @@ namespace TomasKubes.EntraceExaminationReport
         public ReportFormat ReportFormat { get; set; }
 
         [Option('o', "output", Required = true, HelpText = "Output directory for saving reports.")]
-        public string OutputDirectory { get; set; }        
+        public string OutputDirectory { get; set; }
+
+        [Option('c', "CorruptedReportFileName", Required = false, Default = "corrupted", HelpText = "Name of file for recording corrupted input without extension.")]
+        public string CorruptedReportFileName { get; set; }
     }
 }

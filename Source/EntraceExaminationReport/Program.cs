@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TomasKubes.EntraceExaminationReport.Serialization;
 
 namespace TomasKubes.EntraceExaminationReport
 {
@@ -29,10 +30,36 @@ namespace TomasKubes.EntraceExaminationReport
         private static void RunOptionsAndReturnExitCode(CommandOptions opts)
         {
             ExaminationSet set = new ExaminationSet();
-            var parseWarnigns = set.Deserialize(opts.InputFileName)
+            CorruptedInputWarning[] parseWarnigns = set.Deserialize(opts.InputFileName)
                 .ToArray();
 
+            ReportCorruptedRecords(parseWarnigns, opts);
+
             set.MakeReports(opts.OutputDirectory, opts.ReportFormat);
+        }
+
+        private static void ReportCorruptedRecords(CorruptedInputWarning[] parseWarnigns, CommandOptions opts)
+        {
+            if (parseWarnigns.Length == 0)
+                return;
+
+            string path = Path.Combine(opts.OutputDirectory, opts.CorruptedReportFileName + "." +  opts.ReportFormat);
+
+            IReportSerializer serializer = GetSerializer(opts.ReportFormat);
+            serializer.Serialize(path, parseWarnigns);
+        }
+
+        private static IReportSerializer GetSerializer(ReportFormat reportFormat)
+        {
+            switch (reportFormat)
+            {
+                case ReportFormat.XML:
+                    return new XmlReportSerializer();
+                case ReportFormat.JSON:
+                    return new JSonReportSerializer();                    ;
+                default:
+                    throw new NotSupportedException(reportFormat.ToString());
+            }
         }
     }
 }
